@@ -1,0 +1,106 @@
+create table client_master(c_no varchar(5) PRIMARY KEY check(c_no Like 'c%'),
+name varchar(50) not null,
+address1 varchar(50),
+address2 varchar(50),
+city varchar(50),
+pincode Number(6),
+state varchar(50),
+bal_due Decimal(10,2));
+
+insert into client_master values('c01','Pranav','wakad','bhumkar chock','nanded',987987,'maharashtra',100.00); 
+insert into client_master values('c02','Raju','sathe chock','vip road','pune',787987,'maharashtra',200.00); 
+insert into client_master values('c03','sunil','kaspate wasti','bhumkar chock','mumbai',687987,'maharashtra',300.00); 
+insert into client_master values('c04','swapnil','wakad2','bhumkar chock2','chennai',587987,'maharashtra',400.00); 
+insert into client_master values('c05','shilpa','wakad3','bhumkar chock3','umari',487987,'maharashtra',500.00); 
+
+select * from client_master;
+
+desc client_master;
+
+create table product_master(p_no varchar(5) PRIMARY KEY check(p_no Like 'p%'),
+description varchar(50),
+profit_percent Number(10),
+unit_measure Number(10),
+qut_on_hand Number(10),
+reorder_lvl Number(10),
+sell_price Number(10),
+cost_price Number(10)
+);
+
+insert into product_master values('p01','desc1',10,15,50,12,20000,10000);
+insert into product_master values('p02','desc2',20,16,51,13,30000,20000);
+insert into product_master values('p03','desc3',30,17,52,14,40000,30000);
+insert into product_master values('p04','desc4',40,18,53,15,50000,40000);
+insert into product_master values('p05','desc5',50,19,54,16,60000,50000);
+
+select * from product_master;
+
+desc product_master;
+
+create table salesman_master(s_no varchar(5) PRIMARY KEY check(s_no Like 's%'),
+s_name varchar(50) not null,
+address1 varchar(50),
+address2 varchar(50),
+city varchar(50),
+pincode Number(6),
+state varchar(50),
+sal_amt Number(20),
+tgt_to_get Number(20),
+ytd_sales Number(20),
+remarks varchar(50)
+);
+
+insert into salesman_master values('s01','salesman1','address1','address_1','Pune',176876,'maharashtra',50000,70000,60000,'good');
+insert into salesman_master values('s02','salesman2','address2','address_2','mumbai',276876,'maharashtra',60000,80000,70000,'ok');
+insert into salesman_master values('s03','salesman3','address3','address_3','chennai',376876,'maharashtra',70000,90000,80000,'very good');
+insert into salesman_master values('s04','salesman4','address4','address_4','hyderabad',476876,'maharashtra',80000,100000,90000,'beter');
+insert into salesman_master values('s05','salesman5','address5','address_5','bengarur',576876,'maharashtra',90000,110000,100000,'thik');
+
+select * from salesman_master;
+
+desc salesman_master;
+
+create table sales_order(
+o_no varchar(50) PRIMARY KEY check(o_no Like 'o%'),
+o_date date,
+c_no varchar(5) REFERENCES client_master(c_no),
+dely_addr varchar(50),
+s_no varchar(5),
+dely_type char(1) DEFAULT 'f' check(dely_type IN ('p','f')),
+billed_yn Number(20),
+dely_date date,
+order_status varchar(20) check(order_status IN('In Process','Fulfilled','BackOrder','Cancelled')),
+FOREIGN KEY (s_no) REFERENCES salesman_master(s_no),
+CHECK(dely_date>o_date)
+);
+
+insert into sales_order values('o01',TO_DATE('2025-06-2','YYYY-MM-DD'),'c01','wakad','s01','f',3,TO_DATE('2025-06-3','YYYY-MM-DD'),'In Process');
+insert into sales_order values('o02',TO_DATE('2025-06-3','YYYY-MM-DD'),'c02','wakad1','s02','f',4,TO_DATE('2025-06-4','YYYY-MM-DD'),'Fulfilled');
+insert into sales_order values('o03',TO_DATE('2025-06-4','YYYY-MM-DD'),'c03','wakad2','s03','f',5,TO_DATE('2025-06-5','YYYY-MM-DD'),'Fulfilled');
+insert into sales_order values('o04',TO_DATE('2025-06-5','YYYY-MM-DD'),'c04','wakad3','s04','f',6,TO_DATE('2025-06-6','YYYY-MM-DD'),'BackOrder');
+insert into sales_order values('o05',TO_DATE('2025-06-6','YYYY-MM-DD'),'c05','wakad4','s05','f',7,TO_DATE('2025-06-7','YYYY-MM-DD'),'Cancelled');
+
+select * from sales_order;
+
+desc sales_order;
+
+create table sales_order_details(o_no varchar(10),
+p_no varchar(10),
+qty_ordered Number(10),
+qty_disp Number(10),
+product_rate Number(20),
+FOREIGN KEY (o_no) REFERENCES sales_order(o_no),
+FOREIGN KEY (p_no) REFERENCES product_master(p_no),
+PRIMARY KEY(o_no,p_no)
+);
+
+insert into sales_order_details values('o01','p01',5,4,40);
+insert into sales_order_details values('o02','p02',6,5,50);
+insert into sales_order_details values('o03','p03',7,6,60);
+insert into sales_order_details values('o04','p04',8,7,70);
+insert into sales_order_details values('o05','p05',9,8,80);
+
+
+select * from sales_order_details;
+
+desc sales_order_details;
